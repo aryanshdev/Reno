@@ -136,7 +136,7 @@ const SchoolDisplay = ({ school }: { school: School }) => {
         <h3 className="text-xl font-bold text-white mb-1 truncate">
           {school.name}
         </h3>
-        <div className="flex gap-4 text-gray-400 text-sm mb-4 min-h-[40px] items-start w-full flex-col">
+        <div className="flex gap-2 my-2 text-gray-400 text-sm mb-4 min-h-[40px] items-start w-full flex-col">
           <div className="flex w-full gap-2 h-auto items-center">
             <MapPin className="mt-1 flex-shrink-0 text-gray-500 size-4" />
             <span className="truncate">{school.address}</span>

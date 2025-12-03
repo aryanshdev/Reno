@@ -5,6 +5,16 @@ import { useForm } from "react-hook-form";
 import { Upload, Loader2 } from "lucide-react";
 import { toast } from "react-toastify";
 
+interface FormData {
+  name: string;
+  emailID: string;
+  contact: string;
+  address: string;
+  city: string;
+  state: string;
+  image: FileList;
+}
+
 export default function AddSchool() {
   // 2. Initialize the hook
   const {
@@ -15,7 +25,7 @@ export default function AddSchool() {
   } = useForm();
 
   
-  const onSubmit = async (data) => {
+  const onSubmit = async (data : FormData) => {
     try {
       const formData = new FormData();
       

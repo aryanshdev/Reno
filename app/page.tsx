@@ -11,7 +11,7 @@ export default function Home() {
           SchoolDB
         </div>
         <a
-          href="https://github.com/aryanshdev/Reno-Task"
+          href="https://github.com/aryanshdev/Reno"
           target="_blank"
           className="text-sm text-gray-400 hover:text-white transition-colors"
         >
