@@ -14,6 +14,13 @@ yarn install
 ```
 This will install all dependencies required to run the project
 
+### Create .env
+Create .env file in root folder to contain these 2 variables required by API.
+```
+DBURL=<SQL DATABASE URL>
+CLOUDINARY_URL=<CLOUDINARY URL>
+```
+
 ### Run WebApp
 
 Run the development server using:
