@@ -32,7 +32,7 @@ export default function DashboardLayout({
       icon: Info,
     },
   ];
-  const SidebarContent = ({ current }: { current: string }) => (
+  const SidebarContent = () => (
     <div className="flex flex-col h-full justify-between bg-zinc-950">
       <div>
         <div className="p-6 border-b border-gray-800 flex items-center justify-between">
