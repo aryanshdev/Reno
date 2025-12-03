@@ -2,7 +2,7 @@
 
 ## About 
 This repository contains the complete source code for the Web Development Internship Task - School Listing Site. THis project is built using NextJS, TailwindCSS and MySQL.
-
+> ***Check Deployed Version : https://reno-task-pi.vercel.app/***
 ## Getting Started 
 
 ### Install Dependencies
@@ -29,3 +29,15 @@ bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+## API Endpoints
+
+## API Endpoints
+
+This project exposes a simple API under /api/schools using the default NextJS Server.
+
+1) GET /api/schools
+- Returns a JSON array of all school records.
+
+2) POST /api/schools
+- Create a new school record.
