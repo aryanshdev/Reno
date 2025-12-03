@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import { toast } from "react-toastify";
 
 interface School {
   id: number;
@@ -45,16 +46,14 @@ export default function ShowSchools() {
 
       setSchools(data.schools);
     } catch (err) {
-      console.error(err);
-      setError("Could not load schools.");
+      toast.error("Error Fetching Schools From Database");
+      setError("Failed To load Schools Please Try Again.");
     } finally {
+      
       setLoading(false);
     }
   };
 
-  if (error) {
-    return <div className="text-red-500 text-center mt-10">{error}</div>;
-  }
 
   return (
     <div className="w-full">
@@ -81,7 +80,9 @@ export default function ShowSchools() {
           />
         </div>
       </div>
-
+      {error && (
+        <div className="text-red-500 text-center my-10">{error}</div>
+      )}
       {loading ? (
         <div className="flex h-[50vh] w-full items-center justify-center text-gray-400">
           <LoaderCircle className="animate-spin  size-20 stroke-white" />
@@ -124,10 +125,11 @@ const SchoolDisplay = ({ school }: { school: School }) => {
           alt={school.name}
           className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
           onError={(e) => {
-            e.target.setAttribute(
+            const target = e.target as HTMLImageElement; 
+            target.setAttribute(
               "src",
-              "https://placehold.co/600x400/1a1a1a/FFF?text=No+Image"
-            ); // Fallback
+              "https://placehold.co/600x400/1a1a1a/FFF?text=Image+Not+Found"
+            ); // Fallback image
           }}
         />
       </div>
