@@ -27,15 +27,14 @@ export async function POST(request: Request) {
     }
 
     const insertQuery = `
-      INSERT INTO schools (name, address, city, state, contact, email_id, imgExt)
-      VALUES (?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO schools (name, address, city, state, contact, email_id)
+      VALUES (?, ?, ?, ?, ?, ?)
     `;
 
     const buffer = Buffer.from(await imageFile.arrayBuffer());
-    const ext = path.extname(imageFile.name) || ".jpg";
 
     const [result]: any = await db.execute(insertQuery, [
-      name, address, city, state, contact, emailID, ext
+      name, address, city, state, contact, emailID
     ]);
 
     const newSchoolId = result.insertId;
