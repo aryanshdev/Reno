@@ -121,7 +121,7 @@ const SchoolDisplay = ({ school }: { school: School }) => {
     >
       <div className="relative h-48 w-full bg-gray-800 overflow-hidden">
         <img
-          src={`/schoolImages/${school.id}${school.imgExt}`}
+          src={`https://res.cloudinary.com/commitly/image/upload/v1764764849/school_directory/${school.id}`}
           alt={school.name}
           className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
           onError={(e) => {

@@ -1,12 +1,15 @@
 import { NextResponse } from "next/server";
 import mysql from "mysql2/promise";
-import { writeFile } from "fs/promises";
+import { v2 } from "cloudinary";
 import path from "path";
 
 const db = mysql.createPool({
   uri: process.env.DBURL,
 });
 
+v2.config({
+  url: process.env.CLOUDINARY_URL,
+});
 export async function POST(request: Request) {
   try {
     const data = await request.formData();
@@ -37,9 +40,15 @@ export async function POST(request: Request) {
 
     const newSchoolId = result.insertId;
     
-    const filename = `${newSchoolId}${ext}`;
-    const savePath = path.join(process.cwd(), "public/schoolImages", filename);
-    await writeFile(savePath, buffer);
+    const fileBase64 = `data:${imageFile.type};base64,${buffer.toString('base64')}`;
+
+    const uploadResult = await v2.uploader.upload(fileBase64, {
+      folder: "school_directory",
+      public_id: newSchoolId.toString(),
+      overwrite: true,
+      resource_type: "auto"
+    });
+
     return NextResponse.json({ message: "School added successfully", id: newSchoolId }, { status: 200 });
 
   } catch (error) {
