@@ -1,110 +1,52 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
+import { useForm } from "react-hook-form";
 import { Upload, Loader2 } from "lucide-react";
 import { toast } from "react-toastify";
 
 export default function AddSchool() {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [serverMessage, setServerMessage] = useState("");
-  const [errors, setErrors] = useState({});
-  const [imageFile, setImageFile] = useState(null);
+  // 2. Initialize the hook
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm();
 
-  const [formData, setFormData] = useState({
-    name: "",
-    emailID: "",
-    contact: "",
-    address: "",
-    city: "",
-    state: "",
-  });
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-    if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: "" }));
-    }
-  };
-
-  const handleFileChange = (e) => {
-    if (e.target.files && e.target.files[0]) {
-      setImageFile(e.target.files[0]);
-      setErrors((prev) => ({ ...prev, image: "" }));
-    }
-  };
-
-  // TODO: Move validation logic to a separate utility file for reusability
-  const validateForm = () => {
-    const newErr = {};
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    if (!formData.name.trim()) newErr.name = "School name is required";
-    if (!formData.emailID.trim()) {
-      newErr.emailID = "Email is required";
-    } else if (!emailRegex.test(formData.emailID)) {
-      newErr.emailID = "Invalid email format";
-    }
-    if (!formData.contact.trim()) {
-      newErr.contact = "Contact is required";
-    } else if (formData.contact.length < 10) {
-      newErr.contact = "Must be at least 10 digits";
-    }
-    if (!formData.city.trim()) newErr.city = "City is required";
-    if (!formData.state.trim()) newErr.state = "State is required";
-    if (!formData.address.trim()) newErr.address = "Address is required";
-    if (!imageFile) newErr.image = "School image is required";
-
-    setErrors(newErr);
-    return Object.keys(newErr).length === 0;
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setServerMessage("");
-
-    if (!validateForm()) return;
-
-    setIsSubmitting(true);
-
+  
+  const onSubmit = async (data) => {
     try {
-      const dataPayload = new FormData();
-      Object.keys(formData).forEach((key) => {
-        dataPayload.append(key, formData[key]);
-      });
-      dataPayload.append("image", imageFile);
+      const formData = new FormData();
+      
+      formData.append("name", data.name);
+      formData.append("emailID", data.emailID);
+      formData.append("contact", data.contact);
+      formData.append("address", data.address);
+      formData.append("city", data.city);
+      formData.append("state", data.state);
+      
+      formData.append("image", data.image[0]);
 
       const response = await fetch("/api/schools", {
         method: "POST",
-        body: dataPayload,
+        body: formData,
       });
 
       if (response.ok) {
         toast.success("School Added Successfully!");
-        
-        setFormData({
-          name: "",
-          emailID: "",
-          contact: "",
-          address: "",
-          city: "",
-          state: "",
-        });
-        setImageFile(null);
-        e.target.reset(); 
+        reset();
       } else {
         toast.error("Failed To Add School. Please Try Again.");
       }
     } catch (error) {
       console.error(error);
-      setServerMessage("An Error Occurred.");
-    } finally {
-      setIsSubmitting(false);
+      toast.error("An error occurred connecting to the server.");
     }
   };
 
   return (
-    <div className="w-full ">
+    <div className="w-full">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-white tracking-tight mb-2">Add New School</h1>
         <p className="text-gray-400 text-sm">
@@ -112,101 +54,105 @@ export default function AddSchool() {
         </p>
       </div>
 
-      <div className="">
-        <form onSubmit={handleSubmit} className="space-y-6">
+      <div>
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             
+            {/* Name */}
             <div className="space-y-2">
               <label className="text-sm font-medium text-gray-300">School Name</label>
               <input
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
+                {...register("name", { required: "School name is required" })}
                 className="w-full bg-zinc-950 border border-gray-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-white/20 transition-all placeholder:text-gray-600"
                 placeholder="School Name Here"
               />
-              {errors.name && <span className="text-red-500 text-xs">{errors.name}</span>}
+              {errors.name && <span className="text-red-500 text-xs">{errors.name.message?.toString()}</span>}
             </div>
 
+            {/* Email */}
             <div className="space-y-2">
               <label className="text-sm font-medium text-gray-300">Email Address</label>
               <input
-                name="emailID"
-                value={formData.emailID}
-                onChange={handleChange}
-                className="w-full bg-black border border-gray-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-white/20 transition-all placeholder:text-gray-600 bg-zinc-950"
+                {...register("emailID", {
+                  required: "Email is required",
+                  pattern: {
+                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                    message: "Invalid email address format",
+                  },
+                })}
+                className="w-full bg-zinc-950 border border-gray-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-white/20 transition-all placeholder:text-gray-600"
                 placeholder="Email ID"
               />
-              {errors.emailID && <span className="text-red-500 text-xs">{errors.emailID}</span>}
+              {errors.emailID && <span className="text-red-500 text-xs">{errors.emailID.message?.toString()}</span>}
             </div>
 
+            {/* Contact */}
             <div className="space-y-2">
               <label className="text-sm font-medium text-gray-300">Contact Number</label>
               <input
                 type="number"
-                name="contact"
-                value={formData.contact}
-                onChange={handleChange}
+                {...register("contact", {
+                  required: "Contact number is required",
+                  minLength: { value: 10, message: "Must be at least 10 digits" },
+                })}
                 className="w-full bg-zinc-950 border border-gray-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-white/20 transition-all placeholder:text-gray-600"
                 placeholder="Phone Number"
               />
-              {errors.contact && <span className="text-red-500 text-xs">{errors.contact}</span>}
+              {errors.contact && <span className="text-red-500 text-xs">{errors.contact.message?.toString()}</span>}
             </div>
 
+            {/* City */}
             <div className="space-y-2">
               <label className="text-sm font-medium text-gray-300">City</label>
               <input
-                name="city"
-                value={formData.city}
-                onChange={handleChange}
+                {...register("city", { required: "City is required" })}
                 className="w-full bg-zinc-950 border border-gray-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-white/20 transition-all placeholder:text-gray-600"
                 placeholder="City/District"
               />
-              {errors.city && <span className="text-red-500 text-xs">{errors.city}</span>}
+              {errors.city && <span className="text-red-500 text-xs">{errors.city.message?.toString()}</span>}
             </div>
 
+            {/* State */}
             <div className="space-y-2">
               <label className="text-sm font-medium text-gray-300">State</label>
               <input
-                name="state"
-                value={formData.state}
-                onChange={handleChange}
+                {...register("state", { required: "State is required" })}
                 className="w-full bg-zinc-950 border border-gray-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-white/20 transition-all placeholder:text-gray-600"
                 placeholder="State"
               />
-              {errors.state && <span className="text-red-500 text-xs">{errors.state}</span>}
+              {errors.state && <span className="text-red-500 text-xs">{errors.state.message?.toString()}</span>}
             </div>
             
+            {/* Image Upload */}
             <div className="space-y-2">
               <label className="text-sm font-medium text-gray-300">School Image</label>
               <div className="relative">
                 <input
                   type="file"
                   accept="image/*"
-                  onChange={handleFileChange}
+                  {...register("image", { required: "School image is required" })}
                   className="w-full bg-zinc-950 border border-gray-800 rounded-lg px-4 py-3 text-sm text-gray-400 file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:bg-gray-800 file:text-white hover:file:bg-gray-700 cursor-pointer"
                 />
                 <div className="absolute right-3 top-3 text-gray-600 pointer-events-none">
                   <Upload size={18} />
                 </div>
               </div>
-              {errors.image && <span className="text-red-500 text-xs">{errors.image}</span>}
+              {errors.image && <span className="text-red-500 text-xs">{errors.image.message?.toString()}</span>}
             </div>
 
           </div>
 
+          {/* Full Address */}
           <div className="space-y-2">
             <label className="text-sm font-medium text-gray-300">Full Address</label>
             <textarea
-              name="address"
               rows={3}
-              value={formData.address}
-              onChange={handleChange}
+              {...register("address", { required: "Address is required" })}
               className="w-full bg-zinc-950 border border-gray-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-white/20 transition-all placeholder:text-gray-600 resize-none"
               placeholder="Full Address"
             />
-            {errors.address && <span className="text-red-500 text-xs">{errors.address}</span>}
+            {errors.address && <span className="text-red-500 text-xs">{errors.address.message?.toString()}</span>}
           </div>
 
           <button
@@ -223,13 +169,6 @@ export default function AddSchool() {
               "Add School"
             )}
           </button>
-
-          {/* TODO: Create a dedicated Toast component for notifications */}
-          {serverMessage && (
-            <p className={`text-center text-sm mt-4 ${serverMessage.includes("success") ? "text-green-500" : "text-red-500"}`}>
-              {serverMessage}
-            </p>
-          )}
 
         </form>
       </div>
