@@ -5,7 +5,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { School, Plus, LayoutGrid, LogOut, Menu, X, Info } from "lucide-react";
 
-export default function DashboardLayout({ children }) {
+export default function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
   const handleLinkClick = () => setIsMobileMenuOpen(false);
@@ -107,7 +111,6 @@ export default function DashboardLayout({ children }) {
           <Menu size={24} />
         </button>
       </div>
-
 
       {isMobileMenuOpen && (
         <div className="fixed inset-0 z-50 md:hidden">
